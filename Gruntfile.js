@@ -1,168 +1,293 @@
 /**
  *
- * GRUNT.JS CONFIG v.1.0
+ * GRUNT.JS CONFIG 2015
  *
- * This is task runner config for various tools include JS & CSS testing
- * and frontend builds...
+ * Frontend build + process tasks.
  *
- * @author Mark Rushton
+ * @author Mark Rushton <mark@modernfidelity.co.uk>
  *
  * @see http://gruntjs.com
  *
  *
+ * MANUAL DEPENDENCIES
+ *  - Node.js and Node Package Manager - "brew install node"
+ *  - Libsass - "brew install libsass"
+ *  - Jekyll generator - "gem install jekyll"
+ *  - SCSS linting - "gem install scss-lint" - https://github.com/causes/scss-lint
+ *
  */
 
-var currentStylefile = "";
 
 module.exports = function (grunt) {
 
-  // Grunt Setup...
-  grunt.initConfig({
+    //Load all grunt tasks
+    require('load-grunt-tasks')(grunt);
 
-    pkg: grunt.file.readJSON('package.json'),
+    // Grunt Setup...
+    grunt.initConfig({
+
+        pkg: grunt.file.readJSON('package.json'), // Packages are read in from here
+
+        // SASS
+        // Compile Sass files (in .scss format) into CSS files
 
 
-    compass: {                  // Task
-      dist: {                   // Target
-        options: {              // Target options
-          environment: 'dev',
-          config: 'config.rb'
-        }
-      }
-    }, // end compass
 
-    bless: {
-      css: {
-        options: {
-          //cacheBuster: false,
-          compress: true
+        sass: {
+            dist: {
+                files: [{
+
+                    expand: true,
+                    cwd: 'app/sass', // sass folder
+                    src: ['**/*.scss'],
+                    dest: 'app/css',  // css dir
+                    ext: '.css'
+
+                }],
+                options: {
+                    //outputStyle: 'compressed',
+                    sourceMap: 'source.map',
+                    sourceComments: 'map',
+                    precision: 12
+                }
+            }
+            //prod: {
+            //    files: [{
+            //        'css/main.min.css': 'sass/app.scss',
+            //        'css/fonts.min.css': 'sass/fonts.scss',
+            //        'css/print.min.css': 'sass/print.scss',
+            //        'css/ie/ie9.min.css': 'sass/ie/ie9.scss'
+            //    }],
+            //    options: {
+            //        outputStyle: 'compressed',
+            //        //sourceMap: '../source.map',
+            //        //sourceComments: 'map',
+            //        precision: 12
+            //    }
+            //}
         },
-        files: {
-          'css/main.css': 'css/main.css'
-        }
-      }
-    }, // end bless
 
-
-    karma: {
-      unit: {
-        configFile: 'karma.conf.js',
-        runnerPort: 9999,
-        singleRun: true,
-        browsers: ['PhantomJS'],
-        logLevel: 'ERROR',
-        background: true
-      }
-    }, // end Karma
-
-    casperjs: {
-      options: {
-        async: {
-          parallel: false
-        }
-      },
-      //files: ['tests/visual/*.js']
-      files: ['tests/tools/PhantomCSS/demo/*.js']
-    }, // end CasperJS
-
-
-    yslow: {
-      options: {
-        thresholds: {
-          weight: 180,
-          speed: 1000,
-          score: 80,
-          requests: 3
-        }
-      },
-      pages: {
-        files: [
-          {
-            src: 'http://www.aat.org.uk'
-          }
-
-        ]
-      }
-    },
-
-    phantomcss: {
-      desktop: {
-        options: {
-          screenshots: 'test/visual/desktop/',
-          results: 'results/visual/desktop',
-          viewportSize: [1024, 768]
+        // SCSS-LINT
+        // Check Sass files for linting
+        scsslint: {
+            full: {
+                files: [{
+                    src: [
+                        'app/sass/app.scss'
+                    ]
+                }],
+                options: {
+                    config: '.scss-lint-full.yml',
+                    colorizeOutput: true
+                }
+            },
+            light: {
+                files: [{
+                    src: [
+                        'app/sass/app.scss'
+                    ]
+                }],
+                options: {
+                    config: '.scss-lint-light.yml',
+                    colorizeOutput: true,
+                    maxBuffer: 3000 * 1024
+                }
+            }
         },
-        src: [
-          'test/visual/*.js'
-        ]
-      },
-      mobile: {
-        options: {
-          screenshots: 'test/visual/mobile/',
-          results: 'results/visual/mobile',
-          viewportSize: [320, 480]
+
+        // CSS-LINT
+        // Check outputted CSS for gross structural errors
+        csslint: {
+            strict: {
+                src: ['app/css/*.css']
+            },
+            lax: {
+                options: {
+                    csslintrc: '.csslintrc'
+                },
+                src: ['app/css/app.css', 'app/css/app-blessed1.css']
+            }
         },
-        src: [
-          'test/visual/*.js'
-        ]
-      }
-    },
 
-    jekyll: {
-      options: {
-        src: 'component-library'
-      },
-      dev: {
-        options: {
-          dest: 'component-library/docs',
-          config: 'component-library/_config.yml'
+        // BLESS
+        // Counts the number of selectors used, and if they exceed 4096,
+        // splits the file at that point and @imports the left over portions.
+        // Gets around an Internet Explorer bug
+        bless: {
+            css: {
+                options: {
+                    cacheBuster: false,
+                    logCount: true
+                },
+                files: {
+                    'css/main.css': 'css/app-blessed1.css'
+                }
+            }
+        },
+
+        // REPLACE
+        // Fixes https://github.com/sindresorhus/grunt-sass/pull/54
+        // node-sass has a bug where it doesn't produce source files with
+        // correct directory mappings. This Patches that error.
+
+        replace: {
+            sourcemap: {
+                src: ['source.map'],
+                dest: 'source.map',
+                replacements: [{
+                    from: 'app/',
+                    to: ''
+                }]
+            },
+            sass: {
+                src: ['css/*.css'],
+                dest: 'css/',
+                replacements: [{
+                    from: 'sourceMappingURL=source.map',
+                    to: 'sourceMappingURL=../source.map'
+                }]
+            }
+        },
+
+        // CLEAN
+        // Fixes https://github.com/sindresorhus/grunt-sass/pull/54
+        // Deletes the extra mapping file produced by above bug
+
+        clean: {
+            sourcemap: ['css/source.map']
+        },
+
+
+        'jsdoc-ng': {
+            dist: {
+                src: ['js/**/*.js', 'README.md'],
+                dest: 'documentation/jsdoc',
+                template: 'jsdoc-ng',
+                options: {}
+            }
+        },
+        // KARMA
+        // Testing tool for the Angular.JS work
+
+        karma: {
+            core: {
+                configFile: 'karma.conf.js',
+                runnerPort: 9999,
+                singleRun: true,
+                browsers: ['PhantomJS'],
+                logLevel: 'INFO',
+                background: false
+            }
+
+        },
+
+
+        //Blackstopjs (review _mR)
+        backstop: {
+            setup: {
+                options: {
+                    backstop_path: './bower_components/backstopjs',
+                    test_path: './tests/results',
+                    setup: false,
+                    configure: true
+                }
+            },
+            test: {
+                options: {
+                    backstop_path: './bower_components/backstopjs',
+                    test_path: './tests/results',
+                    create_references: false,
+                    run_tests: true
+                }
+            },
+            reference: {
+                options: {
+                    backstop_path: './bower_components/backstopjs',
+                    test_path: './tests/results',
+                    create_references: true,
+                    run_tests: false
+                }
+            }
+        },
+
+
+        // JEKYLL
+        // Used to build up the Component Library
+
+        jekyll: {
+            options: {
+                src: 'component-library/source'
+            },
+            dev: {
+                options: {
+                    dest: 'component-library/docs',
+                    config: 'component-library/_config.yml'
+                }
+            }
+
+        },
+
+        // WATCH
+        // Continuously watch certain files and run previously-defined tasks upon detecting a change
+
+        watch: {
+            sass_to_css: {
+                files: 'app/sass/**/*.scss',
+                tasks: [
+                    //'scsslint:light',
+                    'sass'
+                ]
+            },
+            //component_library: {
+            //    files: ['component-library/source/**/*.html', 'component-library/source/**/*.css'],
+            //    tasks: ['jekyll:dev']
+            //},
+            //css_linting: {
+            //    files: ['css/main.css'],
+            //    tasks: ['csslint:lax'],
+            //    options: {
+            //        debounceDelay: 4000
+            //    }
+            //},
+            sourcemap_cleanup: {
+                files: ['app/css/*.css'],
+                tasks: ['replace', 'clean:sourcemap']
+            }
         }
-      }
 
-    },
+    });
 
-    // Continuously watch certain files and run tasks upon change
-    watch: {
-      css: {
-        files: '**/*.scss',
-        tasks: [
-          'compass'
-          //'bless'
-        ]
-      },
-      jekyll: {
-        files: ['component-library/**/*.html'],
-        tasks: ['jekyll:dev']
-      }
-    } // end watch
 
-  });
-
-  // Load Grunt Plugins
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-compass');
-//  grunt.loadNpmTasks('grunt-bless');
-//  grunt.loadNpmTasks('grunt-karma');
-//  grunt.loadNpmTasks('grunt-casperjs');
-//  grunt.loadNpmTasks('grunt-contrib-jasmine');
-//  grunt.loadNpmTasks('grunt-yslow');
-//  grunt.loadNpmTasks('grunt-phantomcss');
-//  grunt.loadNpmTasks('grunt-jekyll');
-
-  // Set Grunt Tasks to Run
-  grunt.registerTask('default',
-    [
-
-      //'jekyll:dev',   // Component library to follow
-      //'bless',        // Not needed currently
-      //'karma',          // Will need to move to seperate test process from the builds
-      //'casperjs',     // Will need to move to seperate test process from the builds
-      //'yslow',        // This is not stable currently needs testing
-      //'phantomcss',
-      'compass',
-      'watch'
-
+    // GRUNT RUNNER
+    // Set tasks to run at Grunt initial launch
+    grunt.registerTask('build', [
+        //'bless',
+        //'backstop:reference',
+        //'scsslint:light', // needs time to cleanup
+        'sass',
+        'csslint:lax',
+        //'replace',
+        //'clean:sourcemap',
+        //'jekyll:dev'
     ]);
 
+
+    grunt.registerTask('reports', [
+        'build',
+        'karma',
+        'jsdoc-ng',
+        'backstop:test'
+    ]);
+
+    grunt.registerTask('test', [
+        'build',
+        'karma',
+    ]);
+
+    grunt.registerTask('default', [
+        'build',
+        //'test',
+        'watch'
+    ]);
 
 };
