@@ -33,4 +33,8 @@ node_modules
 .idea
 
 
+# Frontend builds
+.sass-cache
+
+
 
