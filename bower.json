@@ -15,9 +15,14 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "1.4.1",
+    "angular": "~1.4.1",
     "angular-route": "~1.4.1",
     "font-awesome": "~4.3.0",
-    "modernizer": "~2.8.2"
+    "modernizer": "~2.8.2",
+    "angular-loader": "~1.4.0",
+    "angular-mocks": "~1.4.0",
+    "html5-boilerplate": "~5.2.0"
+
   }
+
 }
