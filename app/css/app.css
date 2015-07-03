@@ -1,3 +1,4 @@
+@import url("http://fonts.googleapis.com/css?family=Open+Sans:300italic,400,600,700,300");
 /**
  * APP Main CSS Compile
  *
@@ -1408,5 +1409,6 @@ address {
   /* line 60, /Users/markrushton/Sites/modern-frontend/app/sass/vendor/bootstrap/mixins/_grid-framework.scss */
   .col-lg-offset-12 {
     margin-left: 100%; } }
+
 
 /*# sourceMappingURL=../../source.map */
