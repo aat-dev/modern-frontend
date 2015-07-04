@@ -1,5 +1,6 @@
 @import url("http://fonts.googleapis.com/css?family=Open+Sans:300italic,400,600,700,300");
 /**
+ *
  * APP Main CSS Compile
  *
  */
@@ -1410,5 +1411,16 @@ address {
   .col-lg-offset-12 {
     margin-left: 100%; } }
 
-
+/**
+ * Core Partials
+ */
+/**
+ * Core Sections
+ */
+/**
+ * Custom Partials
+ */
+/**
+ * Custom Sections
+ */
 /*# sourceMappingURL=../../source.map */

@@ -28,6 +28,23 @@ Clone the repo and then run an http server from within /app
 This is a great simple server for development : https://www.npmjs.com/package/http-server
 
 
+Builds
+-------------
+
+The current tooling is built around Grunt JS (http://gruntjs.com/)
+
+
+```
+npm install
+```
+
+Then once installed you can run from the 'grunt' command from the main content root. 
+
+
+```
+grunt
+```
+
 Core Files
 -------------
 

@@ -1,14 +1,20 @@
 /**
+ *
  * APP Main CSS Compile
  *
  */
 
 
+// Vendor and 3rd Party Libs
 @import "vendor/bootstrap";
-
-
-
 
 // Fonts
 @import url("http://fonts.googleapis.com/css?family=Open+Sans:300italic,400,600,700,300");
 
+// Core
+@import "core/partials/all";
+@import "core/sections/all";
+
+// Custom
+@import "custom/partials/all";
+@import "custom/sections/all";
