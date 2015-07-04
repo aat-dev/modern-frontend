@@ -17,6 +17,9 @@
             padding-top: 50px;
             padding-bottom: 20px;
         }
+        [ng-cloak] {
+            display: none;
+        }
     </style>
 
     <link rel="stylesheet" href="css/app.css">
@@ -64,22 +67,6 @@
 
 
 <div ng-view></div>
-
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-    <div class="container">
-        <h1>Hello, world! {{ 1 + 1 }}</h1>
-
-
-
-
-        <p>This is a template for a simple marketing or informational website. It includes a large callout called a
-            jumbotron and three supporting pieces of content. Use it as a starting point to create something more
-            unique.</p>
-
-        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
-    </div>
-</div>
 
 
 <div class="container">
@@ -136,8 +123,8 @@
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-route/angular-route.js"></script>
 <script src="app.js"></script>
-<script src="view1/view1.js"></script>
-<script src="view2/view2.js"></script>
+<script src="site/view1/view1.js"></script>
+<script src="site/view2/view2.js"></script>
 <script src="components/version/version.js"></script>
 <script src="components/version/version-directive.js"></script>
 <script src="components/version/interpolate-filter.js"></script>
